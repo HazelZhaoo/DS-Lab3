@@ -50,7 +50,7 @@ bool Matrix::MyIterator::operator!=(const MyIterator& it)
  
 Matrix::Matrix():head(nullptr) , num_rows(0) , num_cols(0){};
 
-Matrix::Matrix(int** array , int row_size , int col_size)
+Matrix::Matrix(int** array , int row_size , int col_size) //parametreized constructor
 {
     head = new Node();
     Node* current_col = head;
@@ -74,7 +74,7 @@ Matrix::Matrix(int** array , int row_size , int col_size)
         temp = temp->next_col; //shift pointer along the row
     }
     
-    MyIterator it(head , head->next_row );
+    MyIterator it(head , head->next_row);
     for(int i = 0 ; i < num_cols ; i++)
     {
         for(int j = 0 ; j < num_rows; j++)
@@ -85,7 +85,7 @@ Matrix::Matrix(int** array , int row_size , int col_size)
     }
 }
     
-Matrix::~Matrix()
+Matrix::~Matrix() //destructor
 {
     Node* temp = head; //set a temporary pointer
     while(temp != nullptr)
@@ -102,35 +102,37 @@ Matrix::~Matrix()
     }
 }
 
-Matrix:: Matrix(const Matrix& copy_m)
+// Copy constructor
+Matrix::Matrix(const Matrix& copy_m)
 {
-    //copied from parameterized constructor//---------------
-    head = new Node();
-    Node* current_col = head;
+    // Initialize new matrix with same dimensions
     num_rows = copy_m.num_rows;
     num_cols = copy_m.num_cols;
-    for(int i = 0 ; i < num_cols ; i++)
-    {
-        current_col->next_col = new Node();
-        current_col = current_col ->next_col;
-    }
+    head = new Node();
+
     
-    Node* temp = head; //a temporary pointer to head
-    for(int i = 0 ; i< num_cols; i++) //go back to head node and create node vertically
-    {
-        Node* new_head = head; //a pointer to head to loop vertically
-        for(int j = 0 ; j < num_rows ; j++)
-        {
-            new_head->next_row = new Node(); //create new nodes along the column
-            new_head = new_head->next_row; //shift pointer along the column
-        }
-        temp = temp->next_col; //shift pointer along the row
+    Node* current_col = head;// Create nodes along horizontally
+    for (int i = 0; i < num_cols; i++) {
+        current_col->next_col = new Node();
+        current_col = current_col->next_col;
     }
-    MyIterator copy_it(copy_m.head , copy_m.head->next_row);
-    MyIterator calling_obj(head , nullptr);
-    int count = 0; // keep track of the number of elements copied
-    while (count < num_rows*num_cols)
-    {
+
+   
+    Node* temp = head; // Create nodes vertically
+    for (int i = 0; i < num_cols; i++) {
+        Node* new_head = head;
+        for (int j = 0; j < num_rows; j++) {
+            new_head->next_row = new Node();
+            new_head = new_head->next_row;
+        }
+        temp = temp->next_col;
+    }
+
+    // Copy elements from original matrix to new matrix using iterators
+    MyIterator copy_it(copy_m.head, copy_m.head->next_row);
+    MyIterator calling_obj(head, nullptr);
+    int count = 0;
+    while (count < num_rows*num_cols) {
         *calling_obj = *copy_it;
         ++calling_obj;
         ++copy_it;
@@ -138,7 +140,7 @@ Matrix:: Matrix(const Matrix& copy_m)
     }
 }
 
-Matrix& Matrix::operator=(const Matrix& obj)
+Matrix& Matrix::operator=(const Matrix& obj) //assignment operator
 {
      if (this == &obj) // self-assignment check
      {
@@ -225,4 +227,28 @@ Node* Matrix::getCol(int col_num)
     }
     
     return temp;
+}
+
+Matrix& Matrix::transpose()
+{
+    static Matrix trans; //a matrix to be returned by reference
+    Node* ptr_to_head = trans.head; //a pointer to the node of the return matrix
+    trans.num_rows = this->num_cols; //swap the rows and cols of the input parameter
+    trans.num_cols = this->num_rows;
+    int i = 0 , j = 0;
+    MyIterator it(this->head , (this->head)->next_row);
+    while(j != this->num_rows) //loop row wise and assign column wise
+    {
+        while(i != this->num_cols) //loop column wise and assign row wise
+        {
+            ptr_to_head->value = *it; //assignt the value of the iterator to the new matrix//
+            ptr_to_head ->next_row = new Node(); //create new node on the next row//
+            ptr_to_head = ptr_to_head->next_row; //traverse row wise
+            ++it; //traverse column wise
+            i++;
+        }
+        j++; //go to the next row
+    }
+    
+    return trans;
 }
