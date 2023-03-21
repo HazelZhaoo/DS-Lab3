@@ -2,30 +2,17 @@
 #include <iterator>
 #include "Matrix.hpp"
 using namespace std;
-
+#define MAX_COL_SIZE 10
 
 int main()
 {
-    int rows = 3, cols = 4;
-        int** arr = new int*[cols];
-        for (int i = 0; i < cols; i++) {
-            arr[i] = new int[rows];
-            for (int j = 0; j < rows; j++) {
-                arr[i][j] = i * rows ; // fill array with some values
-            }
-        }
-    for(int i = 0 ; i < cols ; i++)
-    {
-        for(int j = 0 ; j < rows ; j++)
-        {
-            cout << arr[i][j] << " ";
-        }
-        cout << endl;
-    }
-    
+    int input_array[3][10] = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
+    int row_size = 3;
+    int col_size = 4;
 
-    Matrix mat(arr, rows, cols);
-    Matrix copy_cat(mat);
+    // Create a new Matrix object using the input array
+    Matrix matrix(input_array, row_size, col_size);
+    Matrix copy_m = matrix;
      
  
 }
