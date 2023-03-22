@@ -26,7 +26,7 @@ public:
 class Matrix
 {
 private:
-    Node* head; //a pointer to the head of the matrix//
+    Node* head;  
     int num_rows;
     int num_cols;
 public:
@@ -34,20 +34,19 @@ public:
     Matrix(int array[][MAX_COL_SIZE], int row_size, int col_size);
     Matrix(const Matrix& copy_m);
     Matrix& operator =(const Matrix& obj);
-    // Matrix(const Matrix&& obj);
-    //Matrix& operator=(const Matrix&& obj);
+    Matrix(const Matrix&& obj);
+    Matrix& operator=(const Matrix&& obj);
     ~Matrix();
     void clear();
     int* getRow(int row_num) const; //throw exception
     int* getCol(int col_num) const;//throw exception
-    Matrix& transpose(); // the user shouldnt be aware of the node type // should the 2d array be passed?// instead//
+    Matrix& transpose();
     Matrix operator+(Matrix obj); //throw exception if row not equal row
     Matrix operator*(Matrix obj); //throw exception if not multiplicable
     void copyFrom(const Matrix& obj);
     friend ostream& operator<<(ostream& output , Matrix& obj);
 
-     
-    class MyIterator : public std::iterator<std::forward_iterator_tag  , int>
+    class MyIterator : public std::iterator<std::forward_iterator_tag,int>
     {
     private:
         Node* current_node;
@@ -61,9 +60,6 @@ public:
         bool operator ==(const MyIterator& it);
         bool operator !=(const MyIterator& it);
         MyIterator& operator=(const MyIterator& it);
-         
-        
-       //should consider implementing the allocate function to reuse//
     };
     
 };
