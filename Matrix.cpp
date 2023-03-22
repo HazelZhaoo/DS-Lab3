@@ -5,12 +5,14 @@ Matrix::MyIterator::MyIterator(Node* some_node , Node* some_head):current_node(s
 
 Matrix::MyIterator& Matrix::MyIterator::operator++() //prefix
 {
-    if (current_node != nullptr) {
+    if (current_node->next_col != nullptr) {
         // If there is a next element in the current row, move to it
         current_node = current_node->next_col;
     }
     else {
         // If we reached the end of the current row, move to the next row
+        if (startOfMatrix->next_row == nullptr)
+       throw runtime_error("cant go past the end of the matrix");
         current_node = startOfMatrix->next_row; // Set current node to beginning of next row
         startOfMatrix = current_node; // Update start of matrix to current node
     }
@@ -242,23 +244,23 @@ Matrix Matrix::operator+(Matrix obj)
      m.num_cols = num_cols;
      m.head = new Node();
 
-   
-    for (int i = 0; i < num_rows; i++) {
-        Node* current_row = m.getRow(i);
-        Node* copy_row = getRow(i);
-        Node* copy_row2 = obj.getRow(i)
+ 
+
+        Node* current_row = m.head;
+        Node* copy_row = head;
+        Node* copy_row2 = obj.head;
 
         MyIterator it(current_row, m.head);
         MyIterator copy_it(copy_row, head); 
         MyIterator copy_it2(copy_row2, obj.head); 
-        for (int j = 0; j < num_cols; j++) {
-            *it = *copy_it + *copy_it2;
-            it++;
-            copy_it++;
-            copy_it2++;
-        }
-    }
-    
+while (it.current_node->next_row != nullptr && it.current_node->next_col !=nullptr){
+
+ *it = *copy_it + *copy_it2;
+  it++;
+  copy_it++;
+  copy_it2++;
+
+}
     return *m; // or return m?
     
     
@@ -269,7 +271,7 @@ Matrix Matrix::operator+(Matrix obj)
 }
 
 Matrix Matrix::operator*(Matrix obj); //throw exception if not multiplicable
-
+{
  if (num_cols != obj.num_rows )
        throw runtime_error("cannot multiply these 2 matrices, col num of first needs to match row num of the other");
 
@@ -280,10 +282,59 @@ Matrix Matrix::operator*(Matrix obj); //throw exception if not multiplicable
      m.num_cols = obj.num_cols;
      m.head = new Node();
 
+// get the transpose of obj, call it R
+// two iterators, one for the calling object and the other for obj
+// as they iterate thru the row, they multiply and add their values
+// once reaches the end of the row, all this is one value
+// third iterator points to head of new matrix, adds that value to the first element of the new matrix
+// this third iterator goes to the next element
+// repeat this process, except R's iterator iterates to the next row, while the calling object's restarts. this whole process
+// is repeated until iterator to new matrix goes to the next row
+// thats when iterator to R restarts, and iterator to calling object goes to next row and (automatically) iterator to new mayrix foes to nextrow
 
 
+Matrix R = obj.transpose();
 
     
+      Node* current_row = m.head;
+        Node* copy_row = head;
+        Node* copy_row2 = R.head;
+
+    MyIterator newmat(current_row, m.head);
+  MyIterator callingobj(copy_row, head); 
+  MyIterator Rit(copy_row2, R.head); 
+
+
+
+while (newmat.current_node->next_row &&newmat.current_node->next_col!=nullptr){
+    
+while (newmat.current_node->next_col !=nullptr){
+ 
+while (callingobj.current_node->next_col !=nullptr){
+
+ *newmat += *callingobj * *Rit;
+  callingobj++;
+  Rit++;
+
+}
+    newmat++;
+    Rit++;
+    callingobj.current_node = callingobj.startOfMatrix
+}
+
+  Rit.current_node = R.head;
+     callingobj.current_node = callingobj.startOfMatrix->next_row;
+    callingobj.startOfMatrix = callingobj.current_node;
+}
+
+
+
+
+return *m;
+
+
+}
+
  
 ostream& operator<<(ostream& output, Matrix& obj)
 {
