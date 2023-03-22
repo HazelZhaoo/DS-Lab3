@@ -231,8 +231,7 @@ Matrix& Matrix::transpose()
     return trans;
 }
 
-Matrix Matrix::operator+(Matrix obj) //throw exception if row not equal row
-{
+Matrix Matrix::operator+(Matrix obj) 
     
    if (num_rows != obj.num_rows || num_cols != obj.num_cols)
        throw runtime_error("cannot add matrices of different dimensions");
@@ -260,7 +259,7 @@ Matrix Matrix::operator+(Matrix obj) //throw exception if row not equal row
         }
     }
     
-    
+    return *m; // or return m?
     
     
     
@@ -271,16 +270,20 @@ Matrix Matrix::operator+(Matrix obj) //throw exception if row not equal row
 
 Matrix Matrix::operator*(Matrix obj); //throw exception if not multiplicable
 
+ if (num_cols != obj.num_rows )
+       throw runtime_error("cannot multiply these 2 matrices, col num of first needs to match row num of the other");
+
+
+
+ new Matrix m;
+     m.num_rows = num_rows;
+     m.num_cols = obj.num_cols;
+     m.head = new Node();
 
 
 
 
-
-
-
-
-
-
+    
  
 ostream& operator<<(ostream& output, Matrix& obj)
 {
