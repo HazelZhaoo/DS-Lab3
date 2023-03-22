@@ -75,31 +75,26 @@ Matrix::Matrix(int array[][MAX_COL_SIZE], int row_size, int col_size)
     num_cols = col_size;
 
     // Resize the array if necessary
-        if (num_cols > MAX_COL_SIZE)
-        {
-            num_cols = MAX_COL_SIZE;
-        }
-
-    // Create nodes horizontally based on the number of columns
-    for(int i = 0; i < num_cols; i++)
+    if (num_cols > MAX_COL_SIZE)
     {
-        current_col->next_col = new Node(-1); // Insert a dummy value, which will be overwritten later
-        current_col = current_col->next_col;
+        num_cols = MAX_COL_SIZE;
     }
 
     // Create nodes vertically based on the number of rows and insert the value at once
-    Node* temp = head;
-    for(int i = 0; i < num_cols; i++)
+    for(int j = 0; j < num_cols; j++)
     {
-        Node* new_head = head;
-        for(int j = 0; j < num_rows; j++)
+        Node* new_head = new Node();
+        Node* current_row = new_head;
+        for(int i = 0; i < num_rows; i++)
         {
-            new_head->next_row = new Node(array[j][i]);
-            new_head = new_head->next_row;
+            current_row->next_row = new Node(array[j][i]);
+            current_row = current_row->next_row;
         }
-        temp = temp->next_col;
+        current_col->next_col = new_head;
+        current_col = current_col->next_col;
     }
 }
+
 
 Matrix::~Matrix() //destructor
 {
@@ -197,41 +192,43 @@ Matrix& Matrix::transpose()
         int* current_node = current_row; //now hold the node to traverse through it
         for(int j = 0 ; j < this->num_cols ; j++ )
         {
-            ptr_to_head->value = current_node->value; //assign value to corresponding node
+            ptr_to_head->value = *current_node; //assign value to corresponding node
             ptr_to_head ->next_row = new Node(); //create new node on the next row//
             ptr_to_head = ptr_to_head->next_row; //traverse row wise
-            current_node = current_node->next_col; //traverse column wise
+            current_node++; //traverse column wise
         }
+        
+        delete [] current_row;
     }
     return trans;
 }
 
-void Matrix:: copyFrom(const Matrix& obj)
+void Matrix::copyFrom(const Matrix& obj)
 {
-    // Copy the other matrix
-    head = new Node(obj.head->value); //head is copied
-    Node* current_col = head;
-    Node* obj_head = obj.head->next_col; //will start copying from the next element
     num_rows = obj.num_rows;
     num_cols = obj.num_cols;
-    for (int i = 1; i < num_cols; i++)
-    {
-        current_col->next_col = new Node(obj_head->value); //create node and copy the first row as well//
-        current_col = current_col->next_col;
-        obj_head = obj_head->next_col;
+
+    // Allocate memory for the new matrix
+    head = new Node();
+    Node* current = head;
+    for (int i = 0; i < num_rows; i++) {
+        current->next_row = new Node();
+        current = current->next_row;
     }
-    
-    Node* obj_temp = obj.head->next_row; // a pointer to the second row of obj
-    Node* temp = head->next_row; // a pointer to the second row
-    for (int i = 1; i < num_cols; i++)
-    {
-        Node* new_head = temp->next_row;
-        for (int j = 0; j < num_rows; j++)
-        {
-            new_head->next_row = new Node(obj_temp->value);
-            new_head = new_head->next_row;
-            obj_temp = obj_temp->next_row;
+
+    // Copy the elements from the other matrix
+    Node* other = obj.head;
+    current = head;
+    for (int i = 0; i < num_rows; i++) {
+        Node* other_row = other;
+        Node* current_row = current;
+        for (int j = 0; j < num_cols; j++) {
+            current_row->value = other_row->value;
+            other_row = other_row->next_col;
+            current_row = current_row->next_col;
         }
-        temp = temp->next_col;
+        other = other->next_row;
+        current = current->next_row;
     }
 }
+
