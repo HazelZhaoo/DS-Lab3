@@ -169,26 +169,25 @@ void Matrix::clear()
    }
 }
 
-int* Matrix::getRow(int row_num) const //assuming the index start at 0//
-{
-    if(row_num >= num_rows)
-        throw runtime_error("Row number cannot exceed the number of rows!");
-    
-    Node* temp = head;//does the row and column start at 0 or 1
-    int* arr = new int[num_cols];
-    
-    for(int i = 0 ; i < num_rows-1 ; i++)
-    {
-        temp = temp->next_row;
+int* Matrix::getRow(int row_num) const {
+    if (row_num < 0 || row_num >= num_rows) {
+        throw runtime_error("Invalid row number.");
     }
     
-    for (int i = 0; i < num_cols && temp != nullptr; i++, temp = temp->next_col)
-    {
-        arr[i] = temp->value;
+    Node* current = head;
+    for (int i = 0; i < row_num; i++) {
+        current = current->next_row;
     }
- 
-    return arr;
+    
+    int* row_values = new int[num_cols];
+    for (int i = 0; i < num_cols; i++) {
+        row_values[i] = current->value;
+        current = current->next_col;
+    }
+    
+    return row_values;
 }
+
 
 int* Matrix::getCol(int col_num) const
 {
@@ -208,35 +207,7 @@ int* Matrix::getCol(int col_num) const
     }
     return arr;
 }
-
-//Matrix& Matrix::transpose()
-//{
-//    static Matrix trans; //a matrix to be returned by reference
-//    Node* ptr_to_head = trans.head; //a pointer to the node of the return matrix
-//    trans.num_rows = this->num_cols; //swap the rows and cols of the input parameter
-//    trans.num_cols = this->num_rows;
-//
-//    for(int i = 0 ; i < this->num_rows ; i++)
-//    {
-//        int* current_row = this->getRow(i); //get the row
-//        Node* row_head = ptr_to_head;
-//
-//        for(int j = 0 ; j < this->num_cols ; j++)
-//        {
-//            row_head->value = *(current_row+i); //assign value to the node
-//            row_head->next_row = new Node(); //create node for the next row
-//            row_head = row_head->next_row; //move pointer to the next row
-//        }
-//
-//        delete [] current_row;
-//        ptr_to_head = ptr_to_head->next_col; //move pointer to the next column
-//    }
-//
-//    return trans;
-//}
-//getcolumn using get col and then insert each col into the trans array so that its 2d array and then pass it to the construcotr//but getCol is returning dynamic array so maybe put it into static array//
-
-
+ 
 Matrix& Matrix::transpose()
 {
     int col = this->num_rows;
@@ -244,13 +215,15 @@ Matrix& Matrix::transpose()
     int** current_row = new int*[row];
     int trans_array[row][MAX_COL_SIZE]; // create a 2D array for the transpose of 4 row and 10 column
     
-    for (int i = 0; i < this->num_rows; i++)
+    int i = 0;
+    while( i < this->num_rows)
     {
         current_row[i] = this->getRow(i); // get the current row
         for (int j = 0; j < this->num_cols; j++)
         {
             trans_array[j][i] = current_row[i][j]; // assign the values to the transpose array
         }
+        i++;
     }
     
     for (int i = 0; i < row; i++)
@@ -263,42 +236,7 @@ Matrix& Matrix::transpose()
     return trans;
 }
 
-
-
-//void Matrix::setRow(int i, int* values) {
-//    int* row = getRow(i);  // get pointer to existing row
-//    for (int j = 0; j < num_cols; j++) {
-//        row[j] = values[j];  // copy new values into row
-//    }
-//    delete [] values;  // free memory allocated for values array
-//}
-
-
-//void Matrix::copyFrom(const Matrix& obj)
-//{
-//    num_rows = obj.num_rows;
-//    num_cols = obj.num_cols;
-//    head = new Node(obj.head->value);
-//    Node* current = head;
-//    MyIterator it(obj.head->next_col); // start iterator from obj.head->next_col
-//    for (int i = 0; i < num_rows; i++)
-//    {
-//        Node* current_row = current;
-//        for (int j = 0; j < num_cols+1; j++)
-//        {
-//            current_row->next_col = new Node(*it); // EXC_BAD_ACCESS ERROR
-//            current_row = current_row->next_col;
-//            it++; // move iterator to next column
-//        }
-//        if (i < num_rows - 1) // avoid creating an unnecessary row at the end
-//        {
-//            current_row->next_row = new Node(); // create new row
-//            current_row = current_row->next_row;
-//        }
-//        current = current->next_row;
-//    }
-//}
-
+ 
 void Matrix::copyFrom(const Matrix& obj)
 {
     num_rows = obj.num_rows;
@@ -332,27 +270,6 @@ void Matrix::copyFrom(const Matrix& obj)
         other_current_row = other_current_row->next_row;
     }
 }
-
-
-
-//ostream& operator<<(ostream& output, const Matrix& obj) {
-//    Matrix::MyIterator it(obj.head);
-//
-//    for (int i = 0; i < obj.num_rows; i++) {
-//        Matrix::MyIterator row_it = it;
-//        for (int j = 0; j < obj.num_cols; j++) {
-//            output << *row_it << " ";
-//            row_it++;
-//        }
-//        output << "\n";
-//        it++;
-//    }
-//
-//    return output;
-//}
-
-
- 
 
 ostream& operator<<(ostream& output, const Matrix& mat)
 {
