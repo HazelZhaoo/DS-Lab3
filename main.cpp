@@ -14,7 +14,5 @@ int main()
     Matrix matrix(input_array, row_size, col_size);
     //Matrix copy_m = matrix;
 
-    Matrix obj = Matrix(input_array, row_size, col_size);
-
 
 }
