@@ -267,24 +267,26 @@ void Matrix::copyFrom(const Matrix& obj)
 {
     num_rows = obj.num_rows;
     num_cols = obj.num_cols;
-    head = new Node(obj.head->value);
+    head = new Node();
     Node* current = head;
-    for (int i = 0; i < num_cols; i++) {
+    for (int i = 0; i < num_cols - 1; i++) {
         current->next_col = new Node();
         current = current->next_col;
     }
 
     MyIterator it(obj.head);
+    Node* current_node = head;
     for (int i = 0; i < num_rows; i++) {
-        current->next_row = new Node();
-        current = current->next_row;
-        Node* current_col = current;
+        current_node->next_row = new Node();
+        Node* current_col = current_node;
+        current_node = current_node->next_row;
         for (int j = 0; j < num_cols; j++) {
-            current_col->next_row = new Node(*it);
-            current_col = current_col->next_row;
+            current_col->next_col = new Node(*it);
+            current_col = current_col->next_col;
             it++;
         }
     }
+    head = head->next_col;
 }
 
 ostream& operator<<(ostream& output, const Matrix& obj) {
