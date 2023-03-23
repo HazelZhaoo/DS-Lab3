@@ -19,7 +19,7 @@ public:
     Node(Node* ptr, int val, Node* next_rowptr) :next_row(next_rowptr), value(val), next_col(ptr) {};
 };
 
-class Matrix
+class Matrix 
 {
 private:
     Node* head; //a pointer to the head of the matrix//
@@ -29,7 +29,7 @@ public:
     Matrix();
     Matrix(int array[][MAX_COL_SIZE], int row_size, int col_size);
     Matrix(const Matrix& copy_m);
-    Matrix& operator =(const Matrix& obj);
+    Matrix& operator=(const Matrix& obj);
     Matrix(Matrix&& obj) noexcept;
     Matrix& operator=(Matrix&& obj) noexcept;
     ~Matrix();
@@ -40,7 +40,7 @@ public:
     Matrix operator+(Matrix obj); //throw exception if row not equal row
     Matrix operator*(Matrix obj); //throw exception if not multiplicable
     void copyFrom(const Matrix& obj);
-    friend ostream& operator<<(ostream& output, Matrix& obj);
+    friend ostream& operator<<(ostream& output,const Matrix& obj);
 
 
     class MyIterator : public std::iterator<std::forward_iterator_tag, int>
