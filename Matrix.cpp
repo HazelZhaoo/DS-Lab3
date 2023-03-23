@@ -51,9 +51,6 @@ bool Matrix::MyIterator::operator==(const MyIterator& it)
 
 bool Matrix::MyIterator::operator!=(const MyIterator& it)
 {
-//    if (current_node == nullptr || it.current_node == nullptr) {
-//            return current_node != it.current_node; // handles case where one node is nullptr
-//        }
     return current_node != it.current_node;
 }
  
@@ -79,14 +76,14 @@ Matrix::Matrix(int array[][MAX_COL_SIZE], int row_size, int col_size):num_rows(r
         head = new Node();
         Node* current_col = head;
          
-        for(int i = 0 ; i < num_rows ; i++) //creating the nodes horizontally based on the num of cols
+        for(int i = 0 ; i < num_rows -1 ; i++) //creating the nodes horizontally based on the num of cols
         {
             current_col->next_row = new Node();
             current_col = current_col ->next_row;
         }
 
         Node* temp = head; //a temporary pointer to head
-        for(int i = 0 ; i< num_rows; i++) //go back to head node and create node vertically
+        for(int i = 0 ; i< num_rows ; i++) //go back to head node and create node vertically
         {
             Node* new_head = temp; //a pointer to head to loop vertically
             for(int j = 0 ; j < num_cols ; j++)
@@ -96,8 +93,9 @@ Matrix::Matrix(int array[][MAX_COL_SIZE], int row_size, int col_size):num_rows(r
             }
             temp = temp->next_row; //shift pointer along the row
         }
-    head = head->next_col;
+    //head = head -> next_col;
 }
+
 
 Matrix::~Matrix() //destructor
 {
@@ -178,7 +176,7 @@ int* Matrix::getRow(int row_num) const //assuming the index start at 0//
     Node* temp = head;//does the row and column start at 0 or 1
     int* arr = new int[num_cols];
     
-    for(int i = 0 ; i < num_rows ; i++)
+    for(int i = 0 ; i < num_rows-1 ; i++)
     {
         temp = temp->next_row;
     }
@@ -223,7 +221,7 @@ Matrix& Matrix::transpose()
         int* current_node = current_row; //now hold the node to traverse through it
         for(int j = 0 ; j < this->num_cols ; j++ )
         {
-            ptr_to_head->value = *current_node; //assign value to corresponding node
+            ptr_to_head->value = current_node[j]; //assign value to corresponding node
             ptr_to_head ->next_row = new Node(); //create new node on the next row//
             ptr_to_head = ptr_to_head->next_row; //traverse row wise
             current_node++; //traverse column wise
@@ -269,56 +267,76 @@ void Matrix::copyFrom(const Matrix& obj)
     num_cols = obj.num_cols;
     head = new Node();
     Node* current = head;
-    for (int i = 0; i < num_cols - 1; i++) {
-        current->next_col = new Node();
-        current = current->next_col;
+    for (int i = 0; i < num_rows; i++) // create nodes row wise
+    {
+        current->next_row = new Node();
+        current = current->next_row;
     }
 
     MyIterator it(obj.head);
-    Node* current_node = head;
+    Node* current_node = head->next_row; // move to first row
     for (int i = 0; i < num_rows; i++) {
-        current_node->next_row = new Node();
         Node* current_col = current_node;
-        current_node = current_node->next_row;
         for (int j = 0; j < num_cols; j++) {
             current_col->next_col = new Node(*it);
             current_col = current_col->next_col;
             it++;
         }
+        current_node = current_node->next_row; // move to next row
     }
-    head = head->next_col;
 }
 
-ostream& operator<<(ostream& output, const Matrix& obj) {
-    Matrix::MyIterator it(obj.head);
 
-    for (int i = 0; i < obj.num_rows; i++) {
-        Matrix::MyIterator row_it = it;
-        for (int j = 0; j < obj.num_cols; j++) {
-            output << *row_it << " ";
-            row_it++;
+
+//ostream& operator<<(ostream& output, const Matrix& obj) {
+//    Matrix::MyIterator it(obj.head);
+//
+//    for (int i = 0; i < obj.num_rows; i++) {
+//        Matrix::MyIterator row_it = it;
+//        for (int j = 0; j < obj.num_cols; j++) {
+//            output << *row_it << " ";
+//            row_it++;
+//        }
+//        output << "\n";
+//        it++;
+//    }
+//
+//    return output;
+//}
+
+
+//ostream& operator<<(ostream& out , const Matrix& mat)
+//{
+//    Node* curr = mat.head;
+//    while(curr->next_row != nullptr)
+//    {
+//        Node* rowhead = curr;
+//       while(rowhead != nullptr)
+//       {
+//           out << rowhead->value << " ";
+//           rowhead = rowhead->next_col;
+//       }
+//        out << endl;
+//        curr = curr->next_row;
+//    }
+//    return out;
+//}
+
+ostream& operator<<(ostream& output, const Matrix& mat)
+{
+    Node* curr = mat.head;
+    while(curr != nullptr)
+    {
+        Node* row_head = curr;
+        while(row_head != nullptr)
+        {
+            output << row_head->value << " ";
+            row_head = row_head->next_col;
         }
-        output << "\n";
-        it++;
+        output<< endl;
+        curr = curr ->next_row;
     }
 
     return output;
 }
 
-
-//ostream& operator<<(ostream& out , const Matrix& mat)
-//{
-//    Node* print = mat.head;
-//    while(print->next_row != nullptr)
-//    {
-//        Node* current = print;
-//       while(current != nullptr)
-//       {
-//           out << current->value << " ";
-//           current = current->next_col;
-//       }
-//        out << endl;
-//        print = print->next_row;
-//    }
-//    return out;
-//}
