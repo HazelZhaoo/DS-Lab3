@@ -142,7 +142,7 @@ Matrix Matrix::operator=(Matrix&& obj) noexcept//move assignment operator
 
 Matrix& Matrix::operator=(const Matrix& obj) //assignment operator
 {
-     if (this == &obj) // self-assignment check
+     if (this == &obj) // self-assignment chec k
      {
          return *this;
      }
@@ -154,20 +154,21 @@ Matrix& Matrix::operator=(const Matrix& obj) //assignment operator
 
 void Matrix::clear()
 {
-
-   Node* traverse_ptr = head;  
-   while(traverse_ptr != nullptr)
-   {
-       Node* delete_row = head; //assign the first row as the now to be delete
-       while(delete_row != nullptr) //delete nodes horizontally
-       {
-           Node* delete_node = delete_row; // hold the first node
-           delete_row = delete_row->next_col;
-           delete delete_node; //delete that node
-       }
-       traverse_ptr = traverse_ptr ->next_row; // go to the next row and do the same thing
-   }
+    Node* traverse_ptr = head;
+    while (traverse_ptr != nullptr) // check if current node is nullptr
+    {
+        Node* delete_row = traverse_ptr;
+        traverse_ptr = traverse_ptr->next_col; //go column wise
+        while (delete_row != nullptr) //loop row wise with the inner loop
+        {
+            Node* delete_node = delete_row;
+            delete_row = delete_row->next_row;
+            delete delete_node;
+        }
+    }
+    head = nullptr; // reset head pointer to nullptr
 }
+
 
 int* Matrix::getRow(int row_num) const {
     if (row_num < 0 || row_num >= num_rows) {
